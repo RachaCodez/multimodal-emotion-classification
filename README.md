@@ -22,20 +22,20 @@ A production-ready web application that recognizes human emotions from three mod
 
 ```mermaid
 flowchart TD
-    A["🎙️ Speech Input"] --> P["Preprocessing Layer\naudio_preprocessing.py"]
-    B["💬 Text Input"] --> Q["Preprocessing Layer\ntext_preprocessing.py"]
-    C["😐 Image Input"] --> R["Preprocessing Layer\nimage_preprocessing.py"]
+    A["🎙️ Speech Input"] --> P["Preprocessing Layer<br/>audio_preprocessing.py"]
+    B["💬 Text Input"] --> Q["Preprocessing Layer<br/>text_preprocessing.py"]
+    C["😐 Image Input"] --> R["Preprocessing Layer<br/>image_preprocessing.py"]
 
-    P --> SM["Speech Model\n(.h5 — DNN + MFCC)"]
-    Q --> TM["Text Model\n(BERT / LSTM)"]
-    R --> IM["Image Model\n(.pt — MobileNetV2)"]
+    P --> SM["Speech Model<br/>.h5 — DNN + MFCC"]
+    Q --> TM["Text Model<br/>BERT / LSTM"]
+    R --> IM["Image Model<br/>.pt — MobileNetV2"]
 
-    SM --> FM["Fusion Model\n(.pt — Random Forest Ensemble)"]
+    SM --> FM["Fusion Model<br/>.pt — Random Forest Ensemble"]
     TM --> FM
     IM --> FM
 
-    FM --> API["Flask API\napp.py"]
-    API --> DB["MySQL\nvia SQLAlchemy"]
+    FM --> API["Flask API<br/>app.py"]
+    API --> DB["MySQL<br/>via SQLAlchemy"]
 ```
 
 ---
