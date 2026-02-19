@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}Multimodal Analysis · Emotion Classifier{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <!-- Page Header -->
+    <div class="page-header text-center mb-4">
+      <h1><i data-lucide="layers" class="icon-inline" style="width: 32px; height: 32px;"></i> Multimodal Emotion
+        Analysis</h1>
+      <p>Combine speech, text, and image for the most accurate emotion prediction.</p>
+    </div>
+
+    <div class="card p-4">
+      <form method="post" enctype="multipart/form-data" id="multimodalForm">
+        {{ csrf_token() if csrf_token }}
+
+        <div class="row g-4">
+          <!-- Speech Input -->
+          <div class="col-md-4">
+            <div class="card p-4 h-100"
+              style="background: rgba(34, 197, 94, 0.05); border-color: rgba(34, 197, 94, 0.2);">
+              <div class="text-center mb-3">
+                <span class="modality-icon modality-speech" style="width: 60px; height: 60px; font-size: 1.75rem;">
+                  <i data-lucide="mic" style="width: 28px; height: 28px;"></i>
+                </span>
+              </div>
+              <h5 class="text-center mb-3">Speech</h5>
+              <div class="upload-zone" onclick="document.getElementById('audio_file').click();">
+                <div class="upload-zone-icon"><i data-lucide="upload"
+                    style="width: 48px; height: 48px; opacity: 0.5;"></i></div>
+                <p id="audio_label">Drop audio file or click to browse</p>
+                <small style="color: var(--text-secondary);">WAV, MP3, OGG</small>
+              </div>
+              <input type="file" class="d-none" id="audio_file" name="audio_file" accept="audio/*"
+                onchange="updateLabel('audio_file', 'audio_label')" />
+            </div>
+          </div>
+
+          <!-- Text Input -->
+          <div class="col-md-4">
+            <div class="card p-4 h-100"
+              style="background: rgba(79, 140, 255, 0.05); border-color: rgba(79, 140, 255, 0.2);">
+              <div class="text-center mb-3">
+                <span class="modality-icon modality-text" style="width: 60px; height: 60px; font-size: 1.75rem;">
+                  <i data-lucide="file-text" style="width: 28px; height: 28px;"></i>
+                </span>
+              </div>
+              <h5 class="text-center mb-3">Text</h5>
+              <textarea class="form-control" name="text_input" rows="6"
+                placeholder="Type or paste your text here...&#10;&#10;Example: I'm feeling really happy today!"></textarea>
+            </div>
+          </div>
+
+          <!-- Image Input -->
+          <div class="col-md-4">
+            <div class="card p-4 h-100"
+              style="background: rgba(249, 115, 22, 0.05); border-color: rgba(249, 115, 22, 0.2);">
+              <div class="text-center mb-3">
+                <span class="modality-icon modality-image" style="width: 60px; height: 60px; font-size: 1.75rem;">
+                  <i data-lucide="camera" style="width: 28px; height: 28px;"></i>
+                </span>
+              </div>
+              <h5 class="text-center mb-3">Image</h5>
+              <div class="upload-zone" onclick="document.getElementById('image_file').click();">
+                <div class="upload-zone-icon"><i data-lucide="image"
+                    style="width: 48px; height: 48px; opacity: 0.5;"></i></div>
+                <p id="image_label">Drop face image or click to browse</p>
+                <small style="color: var(--text-secondary);">PNG, JPG, JPEG</small>
+              </div>
+              <input type="file" class="d-none" id="image_file" name="image_file" accept="image/*"
+                onchange="updateLabel('image_file', 'image_label')" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-multimodal btn-custom px-5 py-3 text-white" id="submitBtn">
+            <span id="btnText"><i data-lucide="send" class="icon-inline"></i> Analyze Emotions</span>
+            <span id="btnLoading" class="d-none">
+              <span class="loading me-2"></span>Processing...
+            </span>
+          </button>
+        </div>
+
+        <div class="text-center mt-3">
+          <small style="color: var(--text-secondary);">
+            <i data-lucide="info" class="icon-inline" style="width: 14px; height: 14px;"></i>
+            Provide at least one input. For best results, use all three modalities.
+          </small>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function updateLabel(inputId, labelId) {
+    const input = document.getElementById(inputId);
+    const label = document.getElementById(labelId);
+    if (input.files && input.files[0]) {
+      label.innerHTML = '<i data-lucide="check-circle" style="width: 16px; height: 16px; vertical-align: -2px; margin-right: 4px;"></i> ' + input.files[0].name;
+      label.style.color = '#22c55e';
+      lucide.createIcons();
+    }
+  }
+
+  document.getElementById('multimodalForm').addEventListener('submit', function () {
+    document.getElementById('btnText').classList.add('d-none');
+    document.getElementById('btnLoading').classList.remove('d-none');
+    document.getElementById('submitBtn').disabled = true;
+  });
+
+  lucide.createIcons();
+</script>
+{% endblock %}

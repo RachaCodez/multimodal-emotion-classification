@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}Home · Emotion Classifier{% endblock %}
+{% block content %}
+<div class="row justify-content-center" style="min-height: 70vh; align-items: center;">
+  <div class="col-lg-8 text-center">
+    <!-- Hero Section -->
+    <div class="mb-4">
+      <span class="modality-icon modality-multimodal" style="width: 100px; height: 100px;">
+        <i data-lucide="brain" style="width: 56px; height: 56px;"></i>
+      </span>
+    </div>
+    <h1 style="font-size: 3rem; font-weight: 700; margin-bottom: 1rem;">
+      <span
+        style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        Multimodal Emotion
+      </span>
+      <br />Classifier
+    </h1>
+    <p style="font-size: 1.25rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 2rem;">
+      Analyze emotions from speech, text, and images using state-of-the-art AI with attention-based multimodal fusion.
+    </p>
+
+    <!-- CTA Buttons -->
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="{{ url_for('register') }}" class="btn btn-primary btn-custom px-5 py-3">
+        <i data-lucide="rocket" class="icon-inline"></i> Get Started
+      </a>
+      <a href="{{ url_for('login') }}" class="btn btn-secondary btn-custom px-5 py-3">
+        <i data-lucide="log-in" class="icon-inline"></i> Sign In
+      </a>
+    </div>
+
+    <!-- Features -->
+    <div class="row g-4 mt-5">
+      <div class="col-md-4">
+        <div class="card p-4 h-100">
+          <div class="mb-3">
+            <span class="modality-icon modality-speech" style="width: 60px; height: 60px;">
+              <i data-lucide="mic" style="width: 28px; height: 28px;"></i>
+            </span>
+          </div>
+          <h5>Speech Analysis</h5>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">
+            Detect emotions from voice tone, pitch, and speech patterns.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card p-4 h-100">
+          <div class="mb-3">
+            <span class="modality-icon modality-text" style="width: 60px; height: 60px;">
+              <i data-lucide="file-text" style="width: 28px; height: 28px;"></i>
+            </span>
+          </div>
+          <h5>Text Analysis</h5>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">
+            Understand emotional context from written text using BERT.
+          </p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card p-4 h-100">
+          <div class="mb-3">
+            <span class="modality-icon modality-image" style="width: 60px; height: 60px;">
+              <i data-lucide="camera" style="width: 28px; height: 28px;"></i>
+            </span>
+          </div>
+          <h5>Image Analysis</h5>
+          <p style="color: var(--text-secondary); font-size: 0.9rem;">
+            Recognize facial expressions with deep learning.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>lucide.createIcons();</script>
+{% endblock %}

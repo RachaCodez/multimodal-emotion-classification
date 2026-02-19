@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% block title %}Results · Emotion Classifier{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+
+    {% if modality == 'multimodal' %}
+    {% set fusion = result.get('fusion') %}
+
+    <!-- Main Fusion Result -->
+    {% if fusion %}
+    <div class="card p-5 mb-4 text-center result-card">
+      <div class="mb-3">
+        <span class="emotion-icon emotion-icon-{{ fusion.emotion }}">
+          <i data-lucide="{% if fusion.emotion == 'happy' %}smile{% elif fusion.emotion == 'sad' %}frown{% elif fusion.emotion == 'angry' %}angry{% elif fusion.emotion == 'fear' %}alert-triangle{% elif fusion.emotion == 'disgust' %}thumbs-down{% elif fusion.emotion == 'surprise' %}zap{% else %}meh{% endif %}"
+            style="width: 64px; height: 64px;"></i>
+        </span>
+      </div>
+      <div class="result-emotion">{{ fusion.emotion }}</div>
+      <div class="result-confidence">
+        {{ '%.0f'|format(fusion.confidence * 100) }}% Confidence
+      </div>
+      <div class="confidence-bar mx-auto" style="max-width: 300px;">
+        <div class="confidence-fill" style="width: {{ fusion.confidence * 100 }}%;"></div>
+      </div>
+
+      <!-- Attention Weights -->
+      {% if fusion.attention_weights %}
+      <div class="mt-4 mx-auto" style="max-width: 400px;">
+        <h6 class="mb-3" style="color: var(--text-secondary);"><i data-lucide="brain" class="icon-inline"></i> AI
+          Attention Distribution</h6>
+        {% for mod, weight in fusion.attention_weights.items() %}
+        <div class="attention-bar">
+          <span class="attention-label">
+            <i data-lucide="{% if mod == 'speech' %}mic{% elif mod == 'text' %}file-text{% else %}camera{% endif %}"
+              style="width: 14px; height: 14px; vertical-align: -2px; margin-right: 4px;"></i>
+            {{ mod|capitalize }}
+          </span>
+          <div class="attention-track">
+            <div class="attention-fill {{ mod }}" style="width: {{ weight * 100 }}%;"></div>
+          </div>
+          <span class="attention-value">{{ '%.0f'|format(weight * 100) }}%</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Individual Modality Results -->
+    <h5 class="mb-3"><i data-lucide="bar-chart-2" class="icon-inline"></i> Individual Modality Results</h5>
+    <div class="row g-3 mb-4">
+      {% if result.get('speech') %}
+      <div class="col-md-4">
+        <div class="card p-4 h-100" style="border-left: 4px solid #22c55e;">
+          <div class="d-flex align-items-center mb-3">
+            <span class="modality-icon modality-speech"><i data-lucide="mic"></i></span>
+            <h6 class="mb-0">Speech</h6>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="emotion-badge emotion-{{ result.speech.emotion }}">
+              {{ result.speech.emotion }}
+            </span>
+            <span style="font-weight: 600;">{{ '%.0f'|format(result.speech.confidence * 100) }}%</span>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if result.get('text') %}
+      <div class="col-md-4">
+        <div class="card p-4 h-100" style="border-left: 4px solid #4f8cff;">
+          <div class="d-flex align-items-center mb-3">
+            <span class="modality-icon modality-text"><i data-lucide="file-text"></i></span>
+            <h6 class="mb-0">Text</h6>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="emotion-badge emotion-{{ result.text.emotion }}">
+              {{ result.text.emotion }}
+            </span>
+            <span style="font-weight: 600;">{{ '%.0f'|format(result.text.confidence * 100) }}%</span>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if result.get('image') %}
+      <div class="col-md-4">
+        <div class="card p-4 h-100" style="border-left: 4px solid #f97316;">
+          <div class="d-flex align-items-center mb-3">
+            <span class="modality-icon modality-image"><i data-lucide="camera"></i></span>
+            <h6 class="mb-0">Image</h6>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="emotion-badge emotion-{{ result.image.emotion }}">
+              {{ result.image.emotion }}
+            </span>
+            <span style="font-weight: 600;">{{ '%.0f'|format(result.image.confidence * 100) }}%</span>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Probability Distribution Chart -->
+    <div class="card p-4">
+      <h5 class="mb-3"><i data-lucide="activity" class="icon-inline"></i> Probability Distribution</h5>
+      <canvas id="fusionChart" height="100"></canvas>
+    </div>
+
+    <script>
+      const emotions = {{ config.EMOTIONS | tojson if config is defined else['happy', 'sad', 'angry', 'fear', 'disgust', 'surprise', 'neutral'] }};
+      const vals = {{ (result.get('fusion') or result.get('speech') or result.get('text') or result.get('image')).all_probabilities | default ([0, 0, 0, 0, 0, 0, 0]) | tojson }};
+      const ctx = document.getElementById('fusionChart');
+
+      if (ctx && vals) {
+        Chart.defaults.color = '#a0a0b0';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.08)';
+
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: emotions,
+            datasets: [{
+              label: 'Probability',
+              data: vals,
+              backgroundColor: [
+                'rgba(34, 197, 94, 0.8)',
+                'rgba(59, 130, 246, 0.8)',
+                'rgba(239, 68, 68, 0.8)',
+                'rgba(168, 85, 247, 0.8)',
+                'rgba(236, 72, 153, 0.8)',
+                'rgba(249, 115, 22, 0.8)',
+                'rgba(107, 114, 128, 0.8)'
+              ],
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, max: 1, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+              x: { grid: { display: false } }
+            }
+          }
+        });
+      }
+      lucide.createIcons();
+    </script>
+
+    {% else %}
+    <!-- Single Modality Result -->
+    <div class="card p-5 mb-4 text-center result-card">
+      <div class="mb-3">
+        <span class="emotion-icon emotion-icon-{{ result.emotion }}">
+          <i data-lucide="{% if result.emotion == 'happy' %}smile{% elif result.emotion == 'sad' %}frown{% elif result.emotion == 'angry' %}angry{% elif result.emotion == 'fear' %}alert-triangle{% elif result.emotion == 'disgust' %}thumbs-down{% elif result.emotion == 'surprise' %}zap{% else %}meh{% endif %}"
+            style="width: 64px; height: 64px;"></i>
+        </span>
+      </div>
+      <div class="result-emotion">{{ result.emotion }}</div>
+      <div class="result-confidence">
+        {{ '%.0f'|format(result.confidence * 100) }}% Confidence
+      </div>
+      <div class="confidence-bar mx-auto" style="max-width: 300px;">
+        <div class="confidence-fill" style="width: {{ result.confidence * 100 }}%;"></div>
+      </div>
+    </div>
+
+    <div class="card p-4">
+      <h5 class="mb-3"><i data-lucide="activity" class="icon-inline"></i> Probability Distribution</h5>
+      <canvas id="singleChart" height="100"></canvas>
+    </div>
+
+    <script>
+      const emotions = {{ ['happy', 'sad', 'angry', 'fear', 'disgust', 'surprise', 'neutral'] | tojson }};
+      const vals = {{ result.all_probabilities | default ([0, 0, 0, 0, 0, 0, 0]) | tojson }};
+      const ctx = document.getElementById('singleChart');
+
+      if (ctx && vals) {
+        Chart.defaults.color = '#a0a0b0';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.08)';
+
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: emotions,
+            datasets: [{
+              label: 'Probability',
+              data: vals,
+              backgroundColor: [
+                'rgba(34, 197, 94, 0.8)',
+                'rgba(59, 130, 246, 0.8)',
+                'rgba(239, 68, 68, 0.8)',
+                'rgba(168, 85, 247, 0.8)',
+                'rgba(236, 72, 153, 0.8)',
+                'rgba(249, 115, 22, 0.8)',
+                'rgba(107, 114, 128, 0.8)'
+              ],
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, max: 1, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+              x: { grid: { display: false } }
+            }
+          }
+        });
+      }
+      lucide.createIcons();
+    </script>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-center gap-3 mt-4">
+      <a href="{{ url_for('predict_multimodal') }}" class="btn btn-primary btn-custom">
+        <i data-lucide="refresh-cw" class="icon-inline"></i> New Analysis
+      </a>
+      <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-custom">
+        <i data-lucide="arrow-left" class="icon-inline"></i> Back to Dashboard
+      </a>
+    </div>
+  </div>
+</div>
+<script>lucide.createIcons();</script>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Text Input · Multimodal Emotion Classification{% endblock %}
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card p-4">
+        <h4 class="mb-3">Enter Text</h4>
+        <form method="post" class="needs-validation" novalidate>
+          {{ csrf_token() if csrf_token }}
+          <div class="mb-3">
+            <label for="text_input" class="form-label">Text</label>
+            <textarea id="text_input" name="text_input" class="form-control" rows="5" required></textarea>
+            <div class="invalid-feedback">Please enter some text.</div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-custom">Predict</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: emotion_classifier_web
+    ports:
+      - "5000:5000"
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=rootpassword
+      - MYSQL_DB=emotion_db
+      - SECRET_KEY=${SECRET_KEY:-change-this-secret-key}
+      - FLASK_ENV=production
+    volumes:
+      - ./models:/app/models
+      - ./static/uploads:/app/static/uploads
+      - ./logs:/app/logs
+      - ./datasets:/app/datasets
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - emotion_network
+
+  db:
+    image: mysql:8.0
+    container_name: emotion_classifier_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: emotion_db
+      MYSQL_USER: emotion_user
+      MYSQL_PASSWORD: emotion_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+    restart: unless-stopped
+    networks:
+      - emotion_network
+
+  # Optional: Adminer for database management
+  adminer:
+    image: adminer
+    container_name: emotion_classifier_adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - emotion_network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  emotion_network:
+    driver: bridge

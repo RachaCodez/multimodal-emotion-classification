@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}History · Multimodal Emotion Classification{% endblock %}
+{% block content %}
+  <div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="mb-0">Prediction History</h4>
+      <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('export_history_csv') }}">Export CSV</a>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Modality</th>
+            <th>Emotion</th>
+            <th>Confidence</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in predictions %}
+            <tr>
+              <td>{{ p.prediction_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+              <td>{{ p.input_type }}</td>
+              <td>{{ p.predicted_emotion }}</td>
+              <td>{{ '%.2f'|format(p.confidence_score or 0) }}</td>
+              <td>
+                {% if p.input_type == 'multimodal' %}
+                  <small>
+                    speech: {{ p.speech_emotion or '—' }}, text: {{ p.text_emotion or '—' }}, image: {{ p.image_emotion or '—' }}
+                  </small>
+                {% else %}
+                  <small>—</small>
+                {% endif %}
+              </td>
+            </tr>
+          {% else %}
+            <tr><td colspan="5" class="text-center">No predictions recorded.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

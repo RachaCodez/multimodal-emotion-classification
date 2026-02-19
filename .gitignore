@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Datasets (too large for git — download separately)
+datasets/
+
+# Trained model weights (train locally or download separately)
+models/*.h5
+models/*.pt
+models/*.pkl
+models/*.pth
+models/bert_model/
+
+# Logs
+logs/
+*.log
+
+# Uploads (user-submitted files)
+static/uploads/
+
+# Local database files
+*.db
+*.sqlite3
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Coverage / test artifacts
+.coverage
+htmlcov/
+.pytest_cache/

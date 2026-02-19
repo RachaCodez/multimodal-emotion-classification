@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Login · Emotion Classifier{% endblock %}
+{% block content %}
+<div class="row justify-content-center" style="min-height: 70vh; align-items: center;">
+  <div class="col-md-5 col-lg-4">
+    <div class="card p-5">
+      <div class="text-center mb-4">
+        <div class="mb-3">
+          <span class="modality-icon modality-multimodal" style="width: 80px; height: 80px;">
+            <i data-lucide="lock" style="width: 40px; height: 40px;"></i>
+          </span>
+        </div>
+        <h4 class="mb-1">Welcome Back</h4>
+        <p style="color: var(--text-secondary);">Sign in to continue</p>
+      </div>
+
+      <form method="post">
+        {{ csrf_token() if csrf_token }}
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" class="form-control" name="username" required autofocus
+            placeholder="Enter your username" />
+        </div>
+        <div class="mb-4">
+          <label class="form-label">Password</label>
+          <input type="password" class="form-control" name="password" required placeholder="Enter your password" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-custom w-100 py-3">
+          <i data-lucide="log-in" class="icon-inline"></i> Sign In
+        </button>
+      </form>
+
+      <div class="text-center mt-4">
+        <span style="color: var(--text-secondary);">Don't have an account?</span>
+        <a href="{{ url_for('register') }}" style="color: var(--accent-blue); text-decoration: none; font-weight: 500;">
+          Register
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>lucide.createIcons();</script>
+{% endblock %}

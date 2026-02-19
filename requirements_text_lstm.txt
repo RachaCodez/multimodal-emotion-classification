@@ -1,0 +1,19 @@
+# Minimal requirements for LSTM Text Emotion Recognition
+# Use this for faster installation if you only need text emotion detection
+
+# Deep Learning (use 2.16+ for built-in GPU support)
+tensorflow>=2.16.0
+scikit-learn>=1.3.0
+
+# Data Processing
+numpy>=1.24.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+
+# NLP (optional, for advanced preprocessing)
+nltk>=3.8.1
+
+# Utilities
+joblib>=1.3.0
+
+# For Kaggle dataset download
+kaggle>=1.6.0

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Statistics · Multimodal Emotion Classification{% endblock %}
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card p-4">
+        <h4 class="mb-3">Overall Emotion Statistics</h4>
+        <canvas id="statsChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const statsLabels = {{ labels | tojson }};
+    const statsValues = {{ values | tojson }};
+    const ctx = document.getElementById('statsChart');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: statsLabels,
+          datasets: [{ data: statsValues, backgroundColor: ['#4a90e2','#7b68ee','#28a745','#dc3545','#17a2b8','#ffc107','#6c757d'] }]
+        }
+      });
+    }
+  </script>
+{% endblock %}
+
